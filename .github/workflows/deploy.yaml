@@ -1,0 +1,17 @@
+name: Deploy to EKS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get source code
+        uses: actions/checkout@v6 #GitHub Repository의 현재 코드를 GitHub Actions 실행 컴퓨터로 가져오는 단계.
+
+      - name: Test GitHub Actions
+        run: echo "GitHub Actions started!"
