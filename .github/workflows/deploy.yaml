@@ -10,17 +10,12 @@ permissions:
   contents: read
 
 jobs:
-  test:
+  build:
     runs-on: ubuntu-latest
 
     steps:
       - name: Get source code
         uses: actions/checkout@v6
-
-      - name: Show GitHub IDs
-        run: |
-          echo "OWNER_ID=${{ github.repository_owner_id }}"
-          echo "REPO_ID=${{ github.repository_id }}"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6.3.0
@@ -28,5 +23,17 @@ jobs:
           role-to-assume: arn:aws:iam::015454941471:role/GitHubActionsCICDRole
           aws-region: ap-northeast-2
 
-      - name: Check AWS login
-        run: aws sts get-caller-identity
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build Docker image
+        run: |
+          docker build -t my-web-app:v3 .
+
+      - name: Tag Docker image
+        run: |
+          docker tag my-web-app:v3 015454941471.dkr.ecr.ap-northeast-2.amazonaws.com/my-web-app:v3
+
+      - name: Push Docker image to ECR
+        run: |
+          docker push 015454941471.dkr.ecr.ap-northeast-2.amazonaws.com/my-web-app:v3
