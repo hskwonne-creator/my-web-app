@@ -5,13 +5,23 @@ on:
     branches:
       - main
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
       - name: Get source code
-        uses: actions/checkout@v6 #GitHub Repository의 현재 코드를 GitHub Actions 실행 컴퓨터로 가져오는 단계.
+        uses: actions/checkout@v6
 
-      - name: Test GitHub Actions
-        run: echo "GitHub Actions started!"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v6.3.0
+        with:
+          role-to-assume: arn:aws:iam::015454941471:role/GitHubActionsCICDRole
+          aws-region: ap-northeast-2
+
+      - name: Check AWS login
+        run: aws sts get-caller-identity
